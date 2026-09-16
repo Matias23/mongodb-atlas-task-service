@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: mongodb-atlas-task-service
+  threads:
+    virtual:
+      enabled: true
+  mongodb:
+    # Atlas: mongodb+srv://<user>:<password>@<cluster>.mongodb.net/tasks?retryWrites=true&w=majority
+    uri: ${MONGODB_URI:mongodb://localhost:27017/tasks}
+
+server:
+  port: 8083
