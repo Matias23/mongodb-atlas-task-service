@@ -7,6 +7,7 @@ spring:
   mongodb:
     # Atlas: mongodb+srv://<user>:<password>@<cluster>.mongodb.net/tasks?retryWrites=true&w=majority
     uri: ${MONGODB_URI:mongodb://localhost:27017/tasks}
-
+  config:
+    import: optional:file:./application-local.yml
 server:
   port: 8083
