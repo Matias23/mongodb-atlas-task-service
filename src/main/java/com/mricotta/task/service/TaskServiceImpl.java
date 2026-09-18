@@ -51,4 +51,11 @@ public class TaskServiceImpl implements TaskService {
         }
         taskRepository.deleteById(id);
     }
+
+    @Override
+    public List<TaskResponse> getTaskByStatus(Boolean status) {
+        return taskRepository.findAllByCompleted(status).stream()
+                .map(taskMapper::toDto)
+                .toList();
+    }
 }

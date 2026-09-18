@@ -44,6 +44,11 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTask(id));
     }
 
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<TaskResponse>> getTasksByStatus(@PathVariable Boolean status) {
+        return ResponseEntity.ok(taskService.getTaskByStatus(status));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponse> updateTask(
             @PathVariable String id, @Valid @RequestBody TaskRequest request) {

@@ -15,4 +15,6 @@ public interface TaskService {
     TaskResponse updateTask(String id, TaskRequest request);
 
     void deleteTask(String id);
+
+    List<TaskResponse> getTaskByStatus(Boolean status);
 }
