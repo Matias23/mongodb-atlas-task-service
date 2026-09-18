@@ -7,6 +7,10 @@ import com.mricotta.task.mapper.TaskMapper;
 import com.mricotta.task.repository.TaskRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,12 +21,14 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
 
     @Override
+    @CacheEvict(cacheNames = "taskLists", allEntries = true)
     public TaskResponse createTask(TaskRequest request) {
         var saved = taskRepository.save(taskMapper.toEntity(request));
         return taskMapper.toDto(saved);
     }
 
     @Override
+    @Cacheable(cacheNames = "tasks", key = "#id")
     public TaskResponse getTask(String id) {
         return taskRepository.findById(id)
                 .map(taskMapper::toDto)
@@ -30,6 +36,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Cacheable(cacheNames = "taskLists", key = "'all'")
     public List<TaskResponse> getAllTasks() {
         return taskRepository.findAll().stream()
                 .map(taskMapper::toDto)
@@ -37,6 +44,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Caching(
+            put = @CachePut(cacheNames = "tasks", key = "#id"),
+            evict = @CacheEvict(cacheNames = "taskLists", allEntries = true))
     public TaskResponse updateTask(String id, TaskRequest request) {
         var task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
@@ -45,6 +55,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "tasks", key = "#id"),
+            @CacheEvict(cacheNames = "taskLists", allEntries = true)})
     public void deleteTask(String id) {
         if (!taskRepository.existsById(id)) {
             throw new TaskNotFoundException(id);
@@ -53,6 +66,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Cacheable(cacheNames = "taskLists", key = "'status:' + #status")
     public List<TaskResponse> getTaskByStatus(Boolean status) {
         return taskRepository.findAllByCompleted(status).stream()
                 .map(taskMapper::toDto)

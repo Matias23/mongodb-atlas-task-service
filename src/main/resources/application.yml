@@ -1,6 +1,12 @@
+logging.level.org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 spring:
   application:
     name: mongodb-atlas-task-service
+  cache:
+    type: caffeine
+    cache-names: tasks,taskLists
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=60s,recordStats
   threads:
     virtual:
       enabled: true
